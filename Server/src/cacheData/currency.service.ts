@@ -29,4 +29,8 @@ export class CurrencyService {
             new CurrencyAPIProvider()
         ].sort((a, b) => a.priority - b.priority);
     }
+
+    async convertCurrency(from: string, to: string, amount: number): Promise<ConversionResult> {
+        
+    }
 }
