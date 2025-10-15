@@ -1,8 +1,5 @@
 import axios from 'axios';
 import { ExchangeRateProvider, APIResponse } from '../types';
-
-
-
 /**
  * BaseProvider is an abstract class that defines the core functionality
  * for all exchange rate providers.
@@ -24,7 +21,7 @@ export abstract class  BaseProvider implements ExchangeRateProvider {
 
     async convertCurrency(from: string, to: string, amount: number): Promise<number> {
         const response = await this.fetchRates(from, [to]);
-        if (!response.success || !response.rates || response.rates[to]) {
+        if (!response.success || !response.rates?.[to]) {
             throw new Error(`Failed to fetch rate from ${this.name}`);
         }
         return amount * response.rates[to];
