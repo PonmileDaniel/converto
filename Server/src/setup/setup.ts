@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import pool from '../config/database';
 import redisClient from '../config/redis';
+import currencyRoutes from '../routes/currency.routes';
 
 dotenv.config();
 
@@ -43,6 +44,8 @@ export class ServerSetup {
                 version: '1.0.0'
             });
         });
+
+        this.app.use('/api/currency', currencyRoutes);
     }
 
     private async initializeConnections(): Promise<void> {

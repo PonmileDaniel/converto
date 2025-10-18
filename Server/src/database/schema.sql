@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXIST exchange_rates (
+CREATE TABLE IF NOT EXISTS exchange_rates (
     id SERIAL PRIMARY KEY,
     from_currency VARCHAR(3) NOT NULL,
     to_currency VARCHAR(3) NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXIST exchange_rates (
     expires_at TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXIST api_sosurces (
+CREATE TABLE IF NOT EXISTS api_sources (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
     base_url VARCHAR(255) NOT NULL,
@@ -20,13 +20,13 @@ CREATE TABLE IF NOT EXIST api_sosurces (
     failure_count INTEGER DEFAULT 0
 );
 
-CREATE INDEX IF NOT EXIST idx_exchange_rates_currencies ON exchange_rates(from_currency, to_currency);
-CREATE INDEX IF NOT EXIST idx_exchange_rates_currencies ON exchange_rates(created_at);
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_currencies ON exchange_rates(from_currency, to_currency);
+CREATE INDEX IF NOT EXISTS idx_exchange_rates_created_at ON exchange_rates(created_at);
 CREATE INDEX IF NOT EXISTS idx_exchange_rates_source ON exchange_rates(source);
 CREATE INDEX IF NOT EXISTS idx_api_sources_priority ON api_sources(priority);
 
 
--- Insert initial API source
+-- Insert initial API sources
 INSERT INTO api_sources (name, base_url, priority, is_active) VALUES 
 ('fixer', 'https://data.fixer.io/api', 1, true),
 ('currencyapi', 'https://api.currencyapi.com/v3', 2, true)

@@ -1,10 +1,9 @@
 import { CurrencyAPIProvider } from "../providers/currency.provider";
 import { FixerProvider } from "../providers/fixer.provider";
 import { CacheService } from "./cache.service";
+import { ExchangeRatesProvider } from "../providers/exchange.provider";
 import { ExchangeRateProvider, ConversionResult } from "../types";
-import pool from '../config/database'
-import { timeStamp } from "console";
-
+import pool from '../config/database';
 
 /**
  * CurrencyService handles the main business logic for currency conversion.
@@ -26,18 +25,18 @@ export class CurrencyService {
         this.cacheService = new CacheService();
 
         this.providers = [
+            new ExchangeRatesProvider(),
             new FixerProvider(),
-            new CurrencyAPIProvider()
+            new CurrencyAPIProvider(),
         ].sort((a, b) => a.priority - b.priority);
     }
 
-    async convertCurrency(from: string, to: string, amount: number): Promise<ConversionResult> {
+    async convertCurrency(from: string, to: string, amount: number = 1): Promise<ConversionResult> {
         const cacheKey = this.cacheService.generateKey(from, to);
         const cached = await this.cacheService.get(cacheKey);
 
         if (cached) {
-            console.log(`✅ Cache hit for ${from} to ${to}`);
-
+            console.log(`Cache hit for ${from} to ${to}`);
             return {
                 rate: cached.rate,
                 amount,
@@ -48,26 +47,25 @@ export class CurrencyService {
             };
         }
 
-        // Try Provider if not available in cache
+        console.log(`Cache miss for ${from} to ${to}, trying providers...`);
+
         const errors: string[] = [];
 
         for (const provider of this.providers) {
             if (!provider.isActive) {
-                console.log(`Skipping inactive provider: ${provider.name}`)
+                console.log(`Skipping inactive provider: ${provider.name}`);
                 continue;
             }
 
             try {
-                console.log(`🔄 Trying provider: ${provider.name} (priority: ${provider.priority})`);
+                console.log(`Trying provider: ${provider.name} (priority: ${provider.priority})`);
 
                 const rate = await provider.convertCurrency(from, to, 1);
 
-                console.log(`✅ Provider ${provider.name} succeeded with rate: ${rate}`);
+                console.log(`Provider ${provider.name} succeeded with rate: ${rate}`);
 
                 await this.cacheService.set(cacheKey, rate);
-
                 await this.saveRateToDatabase(from, to, rate, provider.name);
-
                 await this.updateProviderStatus(provider.name, true);
 
                 return {
@@ -80,7 +78,7 @@ export class CurrencyService {
                 };
             } catch (error: any) {
                 const errorMsg = `Provider ${provider.name} failed: ${error.message}`;
-                console.error(errorMsg);
+                console.error(`${errorMsg}`);
                 errors.push(errorMsg);
 
                 await this.updateProviderStatus(provider.name, false);
@@ -91,7 +89,7 @@ export class CurrencyService {
         const lastKnownRate = await this.getLastKnownRate(from, to);
 
         if (lastKnownRate) {
-            console.log(`✅ Using last known rate from database: ${lastKnownRate.rate}`);
+            console.log(`Using last known rate from database: ${lastKnownRate.rate}`);
             return {
                 rate: lastKnownRate.rate,
                 amount,
@@ -101,17 +99,18 @@ export class CurrencyService {
                 timestamp: new Date().toISOString()
             };
         }
-        throw new Error(`All provider failed and also fallback failed: ${errors.join('; ')}`)
+        
+        throw new Error(`All providers failed and no fallback available. Errors: ${errors.join('; ')}`);
     }
 
     private async saveRateToDatabase(from: string, to: string, rate: number, source: string): Promise<void> {
         try {
             await pool.query(
-                'INSERT INTO exchange_rate (from_currency, to_currency, rate, source, expires_at) VALUES ($1, $2, $3, $4, $5)',
+                'INSERT INTO exchange_rates (from_currency, to_currency, rate, source, expires_at) VALUES ($1, $2, $3, $4, $5)',
                 [from, to, rate, source, new Date(Date.now() + 300000)]
-            )
+            );
         } catch (error) {
-            console.error('Database saved Error', error);
+            console.error('Database save error:', error);
         }
     }
 
@@ -124,9 +123,9 @@ export class CurrencyService {
                 LIMIT 1`,
                 [from, to]
             );
-            return result.rows.length > 0 ? result.rows[0] : null
+            return result.rows.length > 0 ? result.rows[0] : null;
         } catch (error) {
-            console.error('Database query error:', error)
+            console.error('❌ Database query error:', error);
             return null;
         }
     }
@@ -142,7 +141,7 @@ export class CurrencyService {
                 );
             } else {
                 await pool.query(
-                    `UPDATE api_source
+                    `UPDATE api_sources
                     SET last_failure_at = CURRENT_TIMESTAMP, failure_count = failure_count + 1
                     WHERE name = $1`,
                     [providerName]
@@ -161,7 +160,7 @@ export class CurrencyService {
             return result.rows;
         } catch (error) {
             console.error('Provider status query error:', error);
-            return []; 
+            return [];
         }
     }
 }

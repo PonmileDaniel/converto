@@ -25,7 +25,6 @@ export class CacheService {
 
             const data: CacheData = JSON.parse(cached);
 
-            // Check if the cached data is expired
             if (Date.now() > data.expiresAt) {
                 await this.delete(key);
                 return null;
