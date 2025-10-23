@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import pool from '../config/database';
 import redisClient from '../config/redis';
 import currencyRoutes from '../routes/currency.routes';
+import {appConfig} from '../config/app.config';
 
 dotenv.config();
 
@@ -15,7 +16,7 @@ export class ServerSetup {
 
     constructor() {
         this.app = express();
-        this.port = Number(process.env.PORT) || 3000;
+        this.port = appConfig.port;
         this.setupMiddleware();
         this.setupRoutes();
         this.setupGracefulShutdown();
@@ -63,7 +64,7 @@ export class ServerSetup {
 
     private setupGracefulShutdown(): void {
         process.on('SIGTERM', async () => {
-            console.log('🔄 Shutting down gracefully...');
+            console.log('Shutting down gracefully...');
             try {
                 await pool.end();
                 await redisClient.quit();

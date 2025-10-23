@@ -33,7 +33,7 @@ export class FixerProvider extends BaseProvider {
                 source: this.name
             };
         } catch (error: any) {
-            console.error(`❌ ${this.name} provider error:`, error.message);
+            console.error(`${this.name} provider error:`, error.message);
             return this.handleError(error);
         }
     }

@@ -1,14 +1,15 @@
 import { createClient } from "redis";
 import dotenv from "dotenv";
+import { appConfig } from "./app.config";
 
 dotenv.config();
 
 const redisClient = createClient({
-  password: process.env.REDIS_PASSWORD,
+  password: appConfig.redis.password,
   socket: {
-    host: process.env.REDIS_HOST,
-    port: Number(process.env.REDIS_PORT),
-    connectTimeout: 10000
+    host: appConfig.redis.host,
+    port: appConfig.redis.port,
+    connectTimeout: appConfig.redis.connectTimeout
   }
 });
 

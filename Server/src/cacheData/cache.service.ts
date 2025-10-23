@@ -1,3 +1,4 @@
+import appConfig from "../config/app.config";
 import redisClient from "../config/redis";
 import { CacheData } from "../types";
 
@@ -15,7 +16,7 @@ export class CacheService {
     private ttl: number;
 
     constructor() {
-        this.ttl = Number(process.env.CACHE_TTL) || 3600;
+        this.ttl = appConfig.cache.ttl;
     }
 
     async get(key: string): Promise<CacheData | null> {

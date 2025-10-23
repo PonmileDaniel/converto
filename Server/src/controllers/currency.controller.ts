@@ -28,14 +28,16 @@ export class CurrencyController {
             const result = await this.currencyService.convertCurrency(from, to, amount);
             res.json({
                 success: true,
-                from,
-                to,
-                amount,
-                convertedAmount: result.convertedAmount,
-                rate: result.rate,
-                cached: result.cached,
-                source: result.source,
-                timestamp: result.timestamp
+                data: {
+                    from,
+                    to,
+                    amount,
+                    convertedAmount: result.convertedAmount,
+                    rate: result.rate,
+                    cached: result.cached,
+                    source: result.source,
+                    timestamp: result.timestamp
+                }
             });
         } catch (error: any) {
             console.error('Conversion error:', error);

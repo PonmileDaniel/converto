@@ -60,7 +60,9 @@ export class CurrencyService {
             try {
                 console.log(`Trying provider: ${provider.name} (priority: ${provider.priority})`);
 
-                const rate = await provider.convertCurrency(from, to, 1);
+                const convertedAmount = await provider.convertCurrency(from, to, amount);
+
+                const rate = convertedAmount / amount;
 
                 console.log(`Provider ${provider.name} succeeded with rate: ${rate}`);
 
@@ -125,7 +127,7 @@ export class CurrencyService {
             );
             return result.rows.length > 0 ? result.rows[0] : null;
         } catch (error) {
-            console.error('❌ Database query error:', error);
+            console.error('Database query error:', error);
             return null;
         }
     }
