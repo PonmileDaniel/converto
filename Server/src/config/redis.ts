@@ -9,7 +9,7 @@ const redisClient = createClient({
   socket: {
     host: appConfig.redis.host,
     port: appConfig.redis.port,
-    connectTimeout: appConfig.redis.connectTimeout
+    connectTimeout: appConfig.redis.connectTimeout,
   }
 });
 
