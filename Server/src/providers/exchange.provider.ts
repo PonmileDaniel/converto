@@ -1,11 +1,12 @@
 import { BaseProvider } from "./base.provider";
 import { APIResponse } from "../types";
-import { RecordableHistogram } from "perf_hooks";
+import { appConfig } from '../config/app.config'
+
 
 export class ExchangeRatesProvider extends BaseProvider {
-    public name = 'exchangerate';
-    public priority = 2;
-    private baseUrl = 'https://api.exchangerate-api.com/v4';
+    public name = appConfig.apis.exchangerates.name;;
+    public priority = appConfig.apis.exchangerates.priority;
+    private baseUrl = appConfig.apis.exchangerates.baseUrl;
 
     async fetchRates(baseCurrency: string, targetCurrencies: string[]): Promise<APIResponse> {
         try {

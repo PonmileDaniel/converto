@@ -14,6 +14,7 @@ import { CacheData } from "../types";
 
 export class CacheService {
     private ttl: number;
+    private cachedHealthy: boolean = true;
 
     constructor() {
         this.ttl = appConfig.cache.ttl;
@@ -21,8 +22,16 @@ export class CacheService {
 
     async get(key: string): Promise<CacheData | null> {
         try {
+
+            if (!this.cachedHealthy) {
+                console.warn('⚠️ Cache marked as unhealthy, skipping get operation');
+                return null;
+            }
+
             const cached = await redisClient.get(key);
-            if (!cached) return null;
+            if (!cached) {
+                return null;
+            }
 
             const data: CacheData = JSON.parse(cached);
 
@@ -30,14 +39,16 @@ export class CacheService {
                 await this.delete(key);
                 return null;
             }
+            this.cachedHealthy = true;
             return data;
         } catch (error) {
             console.error("Error getting cache:", error);
+            this.cachedHealthy = false;
             return null;
         }
     }
 
-    async set(key: string, rate: number): Promise<void> {
+    async set(key: string, rate: number): Promise<boolean> {
         try {
             const data: CacheData = {
                 rate,
@@ -45,17 +56,45 @@ export class CacheService {
                 expiresAt: Date.now() + (this.ttl * 1000)
             };
             await redisClient.set(key, JSON.stringify(data));
+            this.cachedHealthy = true;
+            return true;
         } catch (error) {
-            console.log('Cache set error:', error);            
+            console.error('Cache error:', error);
+            this.cachedHealthy = false;
+            console.warn(`Failed to cache key: ${key} App continue without cache`);
+            return false;
         }
     }
 
-    async delete(key: string): Promise<void> {
+    async delete(key: string): Promise<boolean> {
         try {
-            await redisClient.del(key);
+            const result = await redisClient.del(key);
+            
+            if (process.env.NODE_ENV !== 'production') {
+                if (result > 0) {
+                    console.log(`Deleted cache key: ${key}`);
+                } else {
+                    console.log(`Key not found for deletion: ${key}`);
+                }   
+            }
+            this.cachedHealthy = true;
+            return result > 0;
         } catch (error) {
-            console.log('Cache delete error:', error);
+            console.error('Cache delete error:', error);
+            this.cachedHealthy = false;
+
+            console.warn(`Failed to delete cache key: ${key}`);
+            return false;
+
         }
+    }
+
+    isHealthy(): boolean {
+        return this.cachedHealthy;
+    }
+
+    resetHealth(): void {
+        this.cachedHealthy = true;
     }
 
     generateKey(from: string, to: string): string {

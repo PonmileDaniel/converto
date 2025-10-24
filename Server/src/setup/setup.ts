@@ -6,6 +6,8 @@ import dotenv from 'dotenv';
 import pool from '../config/database';
 import redisClient from '../config/redis';
 import currencyRoutes from '../routes/currency.routes';
+import healthRoutes from '../routes/health.routes';
+import appRoutes from '../routes/app.routes'
 import {appConfig} from '../config/app.config';
 
 dotenv.config();
@@ -31,21 +33,8 @@ export class ServerSetup {
     }
 
     private setupRoutes(): void {
-        this.app.get('/health', (req, res) => {
-            res.json({
-                status: 'OK',
-                timestamp: new Date().toISOString(),
-                service: 'Currency Converter API'
-            });
-        });
-
-        this.app.get('/', (req, res) => {
-            res.json({
-                message: 'Currency Converter API',
-                version: '1.0.0'
-            });
-        });
-
+        this.app.use('/', appRoutes);
+        this.app.use('/health', healthRoutes);
         this.app.use('/api/currency', currencyRoutes);
     }
 

@@ -37,9 +37,22 @@ interface IAppConfig {
 
     apis: {
         fixer: {
+            name: string;
+            priority: number;
+            baseUrl: string;
             key: string;
         };
         currencyapi: {
+            name: string;
+            priority: number;
+            baseUrl: string;
+            key: string;
+        };
+
+        exchangerates: {
+            name: string;
+            priority: number;
+            baseUrl: string;
             key: string;
         };
     };
@@ -71,9 +84,21 @@ class AppConfig implements IAppConfig {
 
     apis: {
         fixer: {
+            name: string;
+            priority: number;
+            baseUrl: string;
             key: string;
         };
         currencyapi: {
+            name: string;
+            priority: number;
+            baseUrl: string;
+            key: string;
+        };
+        exchangerates: {
+            name: string;
+            priority: number;
+            baseUrl: string;
             key: string;
         };
     };
@@ -103,10 +128,23 @@ class AppConfig implements IAppConfig {
 
         this.apis = {
             fixer: {
+                name: 'fixer',
+                priority: this.getEnvAsNumber('FIXER_PRIORITY', 3),
+                baseUrl: this.getEnvAsString('FIXER_BASE_URL', 'http://data.fixer.io/api'),
                 key: this.getEnvAsString('fixerapiKey', ''),
             },
+
             currencyapi: {
+                name: 'currencyapi',
+                priority: this.getEnvAsNumber('CURRENCYAPI_PRIORITY', 2),
+                baseUrl: this.getEnvAsString('CURRENCYAPI_BASE_URL', 'https://api.currencyapi.com/v3'),
                 key: this.getEnvAsString('currencyapiKey', ''),
+            },
+            exchangerates: {
+                name: 'exchangerates',
+                priority: this.getEnvAsNumber('EXCHANGERATES_PRIORITY', 1),
+                baseUrl: this.getEnvAsString('EXCHANGERATES_BASE_URL', 'https://api.exchangerate-api.com/v4'),
+                key: this.getEnvAsString('exchangeratesKey', ''),
             },
         };
 

@@ -1,11 +1,12 @@
 import { BaseProvider } from "./base.provider";
 import { APIResponse } from "../types";
+import { appConfig } from "../config/app.config";
 
 export class CurrencyAPIProvider extends BaseProvider {
-    public name = 'currencyapi';
-    public priority = 1;
-    private baseUrl = 'https://api.currencyapi.com/v3';
-    private apiKey = process.env.currencyapiKey;
+    public name = appConfig.apis.currencyapi.name;;
+    public priority = appConfig.apis.currencyapi.priority;
+    private baseUrl = appConfig.apis.currencyapi.baseUrl;
+    private apiKey = appConfig.apis.currencyapi.key
 
     async fetchRates(baseCurrency: string, targetCurrencies: string[]): Promise<APIResponse> {
         try {
