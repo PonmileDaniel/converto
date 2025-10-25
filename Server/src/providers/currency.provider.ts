@@ -3,7 +3,7 @@ import { APIResponse } from "../types";
 import { appConfig } from "../config/app.config";
 
 export class CurrencyAPIProvider extends BaseProvider {
-    public name = appConfig.apis.currencyapi.name;;
+    public name = appConfig.apis.currencyapi.name;
     public priority = appConfig.apis.currencyapi.priority;
     private baseUrl = appConfig.apis.currencyapi.baseUrl;
     private apiKey = appConfig.apis.currencyapi.key;
