@@ -13,18 +13,25 @@ import { CacheData } from "../types";
  */
 
 export class CacheService {
+    private static instance: CacheService;
     private ttl: number;
     private cachedHealthy: boolean = true;
 
-    constructor() {
+    private constructor() {
         this.ttl = appConfig.cache.ttl;
+    }
+
+    public static getInstance(): CacheService {
+        if (!CacheService.instance) {
+            CacheService.instance = new CacheService();
+        }
+        return CacheService.instance;
     }
 
     async get(key: string): Promise<CacheData | null> {
         try {
-
             if (!this.cachedHealthy) {
-                console.warn('⚠️ Cache marked as unhealthy, skipping get operation');
+                console.warn('Cache marked as unhealthy, skipping get operation');
                 return null;
             }
 

@@ -5,7 +5,7 @@ import { ExchangeRatesProvider } from "../providers/exchange.provider";
 import { ExchangeRateProvider, ConversionResult } from "../types";
 import { ExchangeRateRepository } from "../repositories/exchange-rate.repository";
 import { ApiSourceRespository } from "../repositories/api-source.repository";
-// import pool from '../config/database';
+
 
 /**
  * CurrencyService handles the main business logic for currency conversion.
@@ -26,7 +26,7 @@ export class CurrencyService {
     private apiSourceRepository: ApiSourceRespository;
 
     constructor() {
-        this.cacheService = new CacheService();
+        this.cacheService = CacheService.getInstance();
         this.exchangeRateRepository = new ExchangeRateRepository();
         this.apiSourceRepository = new ApiSourceRespository();
 
