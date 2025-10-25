@@ -8,6 +8,31 @@ export class ExchangeRatesProvider extends BaseProvider {
     public priority = appConfig.apis.exchangerates.priority;
     private baseUrl = appConfig.apis.exchangerates.baseUrl;
 
+    constructor() {
+        super();
+        this.isActive = this.determineActiveStatus();
+
+        if(!this.isActive) {
+            console.warn(`${this.name} provider is disabled`);
+        }
+        else {
+            console.log(`${this.name} provider is active`);
+        }
+    }
+
+    private determineActiveStatus(): boolean {
+        const config = appConfig.apis.exchangerates;
+        if (!config.enabled) {
+            return false;
+        }
+
+        if (!this.baseUrl) {
+            return false;
+        }
+        
+        return true;
+    }
+
     async fetchRates(baseCurrency: string, targetCurrencies: string[]): Promise<APIResponse> {
         try {
             const url = `${this.baseUrl}/latest/${baseCurrency}`;

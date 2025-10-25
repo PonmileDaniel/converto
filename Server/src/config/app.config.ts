@@ -41,12 +41,14 @@ interface IAppConfig {
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
         currencyapi: {
             name: string;
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
 
         exchangerates: {
@@ -54,6 +56,7 @@ interface IAppConfig {
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
     };
 }
@@ -88,18 +91,21 @@ class AppConfig implements IAppConfig {
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
         currencyapi: {
             name: string;
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
         exchangerates: {
             name: string;
             priority: number;
             baseUrl: string;
             key: string;
+            enabled: boolean;
         };
     };
 
@@ -132,6 +138,7 @@ class AppConfig implements IAppConfig {
                 priority: this.getEnvAsNumber('FIXER_PRIORITY', 3),
                 baseUrl: this.getEnvAsString('FIXER_BASE_URL', 'http://data.fixer.io/api'),
                 key: this.getEnvAsString('fixerapiKey', ''),
+                enabled: this.getEnvAsBoolean('FIXER_ENABLED'),
             },
 
             currencyapi: {
@@ -139,12 +146,14 @@ class AppConfig implements IAppConfig {
                 priority: this.getEnvAsNumber('CURRENCYAPI_PRIORITY', 2),
                 baseUrl: this.getEnvAsString('CURRENCYAPI_BASE_URL', 'https://api.currencyapi.com/v3'),
                 key: this.getEnvAsString('currencyapiKey', ''),
+                enabled: this.getEnvAsBoolean('CURRENCYAPI_ENABLED'),
             },
             exchangerates: {
                 name: 'exchangerates',
                 priority: this.getEnvAsNumber('EXCHANGERATES_PRIORITY', 1),
                 baseUrl: this.getEnvAsString('EXCHANGERATES_BASE_URL', 'https://api.exchangerate-api.com/v4'),
                 key: this.getEnvAsString('exchangeratesKey', ''),
+                enabled: this.getEnvAsBoolean('EXCHANGERATES_ENABLED'),
             },
         };
 
@@ -164,6 +173,12 @@ class AppConfig implements IAppConfig {
             return defaultValue;
         }
         return parsed;
+    }
+
+    private getEnvAsBoolean(key: string, defaultValue: boolean = false): boolean {
+        const value = process.env[key];
+        if (value === undefined) return defaultValue;
+        return value.toLowerCase() === 'true';
     }
 
     private validate(): void {

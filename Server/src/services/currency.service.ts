@@ -3,7 +3,9 @@ import { FixerProvider } from "../providers/fixer.provider";
 import { CacheService } from "./cache.service";
 import { ExchangeRatesProvider } from "../providers/exchange.provider";
 import { ExchangeRateProvider, ConversionResult } from "../types";
-import pool from '../config/database';
+import { ExchangeRateRepository } from "../repositories/exchange-rate.repository";
+import { ApiSourceRespository } from "../repositories/api-source.repository";
+// import pool from '../config/database';
 
 /**
  * CurrencyService handles the main business logic for currency conversion.
@@ -20,9 +22,13 @@ import pool from '../config/database';
 export class CurrencyService {
     private providers: ExchangeRateProvider[];
     private cacheService: CacheService;
+    private exchangeRateRepository: ExchangeRateRepository;
+    private apiSourceRepository: ApiSourceRespository;
 
     constructor() {
         this.cacheService = new CacheService();
+        this.exchangeRateRepository = new ExchangeRateRepository();
+        this.apiSourceRepository = new ApiSourceRespository();
 
         this.providers = [
             new ExchangeRatesProvider(),
@@ -67,8 +73,8 @@ export class CurrencyService {
                 console.log(`Provider ${provider.name} succeeded with rate: ${rate}`);
 
                 await this.cacheService.set(cacheKey, rate);
-                await this.saveRateToDatabase(from, to, rate, provider.name);
-                await this.updateProviderStatus(provider.name, true);
+                await this.exchangeRateRepository.save(from, to, rate, provider.name);
+                await this.apiSourceRepository.updateStatus(provider.name, true);
 
                 return {
                     rate,
@@ -83,85 +89,41 @@ export class CurrencyService {
                 console.error(`${errorMsg}`);
                 errors.push(errorMsg);
 
-                await this.updateProviderStatus(provider.name, false);
+                try {
+                    await this.apiSourceRepository.updateStatus(provider.name, false);
+                } catch (error) {
+                    console.warn('Failed to update provider status, continuing...');
+                }
                 continue;
             }
         }
 
-        const lastKnownRate = await this.getLastKnownRate(from, to);
+        try {
+            const lastKnownRate = await this.exchangeRateRepository.getLastKnownRate(from, to);
 
-        if (lastKnownRate) {
-            console.log(`Using last known rate from database: ${lastKnownRate.rate}`);
-            return {
-                rate: lastKnownRate.rate,
-                amount,
-                convertedAmount: amount * lastKnownRate.rate,
-                cached: false,
-                source: `fallback-${lastKnownRate.source}`,
-                timestamp: new Date().toISOString()
-            };
+            if (lastKnownRate) {
+                console.log(`Using last known rate from database: ${lastKnownRate.rate}`);
+                return {
+                    rate: lastKnownRate.rate,
+                    amount,
+                    convertedAmount: amount * lastKnownRate.rate,
+                    cached: false,
+                    source: `fallback-${lastKnownRate.source}`,
+                    timestamp: new Date().toISOString()
+                }
+            }
+        } catch (error) {
+            console.warn('Failed to retrieve fallback rate from database');
         }
         
         throw new Error(`All providers failed and no fallback available. Errors: ${errors.join('; ')}`);
     }
 
-    private async saveRateToDatabase(from: string, to: string, rate: number, source: string): Promise<void> {
-        try {
-            await pool.query(
-                'INSERT INTO exchange_rates (from_currency, to_currency, rate, source, expires_at) VALUES ($1, $2, $3, $4, $5)',
-                [from, to, rate, source, new Date(Date.now() + 300000)]
-            );
-        } catch (error) {
-            console.error('Database save error:', error);
-        }
-    }
-
-    private async getLastKnownRate(from: string, to: string): Promise<{ rate: number, source: string } | null> {
-        try {
-            const result = await pool.query(
-                `SELECT rate, source FROM exchange_rates
-                WHERE from_currency = $1 AND to_currency = $2
-                ORDER BY created_at DESC
-                LIMIT 1`,
-                [from, to]
-            );
-            return result.rows.length > 0 ? result.rows[0] : null;
-        } catch (error) {
-            console.error('Database query error:', error);
-            return null;
-        }
-    }
-
-    private async updateProviderStatus(providerName: string, success: boolean): Promise<void> {
-        try {
-            if (success) {
-                await pool.query(
-                    `UPDATE api_sources
-                    SET last_success_at = CURRENT_TIMESTAMP, failure_count = 0
-                    WHERE name = $1`,
-                    [providerName]
-                );
-            } else {
-                await pool.query(
-                    `UPDATE api_sources
-                    SET last_failure_at = CURRENT_TIMESTAMP, failure_count = failure_count + 1
-                    WHERE name = $1`,
-                    [providerName]
-                );
-            }
-        } catch (error) {
-            console.error('Provider status update error:', error);
-        }
-    }
-
     async getProviderStatus(): Promise<any[]> {
         try {
-            const result = await pool.query(
-                'SELECT * FROM api_sources ORDER BY priority ASC'
-            );
-            return result.rows;
+            return await this.apiSourceRepository.getAllProviders();
         } catch (error) {
-            console.error('Provider status query error:', error);
+            console.error('Failed to get provider status:', error);
             return [];
         }
     }

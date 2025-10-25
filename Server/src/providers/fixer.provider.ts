@@ -8,6 +8,31 @@ export class FixerProvider extends BaseProvider {
     private baseUrl = appConfig.apis.fixer.baseUrl;
     private apiKey = appConfig.apis.fixer.key;
 
+    constructor() {
+        super();
+        this.isActive = this.determineActiveStatus();
+
+        if(!this.isActive) {
+            console.warn(`${this.name} provider is disabled`);
+        }
+        else {
+            console.log(`${this.name} provider is active`);
+        }
+    }
+
+    private determineActiveStatus(): boolean {
+        const config = appConfig.apis.fixer;
+        if (!config.enabled) {
+            return false;
+        }
+
+        if (!this.apiKey) {
+            return false;
+        }
+        
+        return true;
+    }
+
     async fetchRates(baseCurrency: string, targetCurrencies: string[]): Promise<APIResponse> {
         try {
             if(!this.apiKey) {

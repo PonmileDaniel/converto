@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { CurrencyService } from '../cacheData/currency.service';
+import { CurrencyService } from '../services/currency.service';
 import Joi from 'joi';
 
 

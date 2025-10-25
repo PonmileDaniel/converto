@@ -6,7 +6,32 @@ export class CurrencyAPIProvider extends BaseProvider {
     public name = appConfig.apis.currencyapi.name;;
     public priority = appConfig.apis.currencyapi.priority;
     private baseUrl = appConfig.apis.currencyapi.baseUrl;
-    private apiKey = appConfig.apis.currencyapi.key
+    private apiKey = appConfig.apis.currencyapi.key;
+
+    constructor() {
+        super();
+        this.isActive = this.determineActiveStatus();
+
+        if(!this.isActive) {
+            console.warn(`${this.name} provider is disabled`);
+        }
+        else {
+            console.log(`${this.name} provider is active`);
+        }
+    }
+
+    private determineActiveStatus(): boolean {
+        const config = appConfig.apis.currencyapi;
+        if (!config.enabled) {
+            return false;
+        }
+
+        if (!this.apiKey) {
+            return false;
+        }
+        
+        return true;
+    }
 
     async fetchRates(baseCurrency: string, targetCurrencies: string[]): Promise<APIResponse> {
         try {
