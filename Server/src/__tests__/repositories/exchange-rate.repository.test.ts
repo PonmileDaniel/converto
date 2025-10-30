@@ -53,4 +53,17 @@ describe('ExchangeRateRepository', () => {
             expect(result).toBeNull();
         });
     });
+
+    describe('getRateHistory', () => {
+        it('should return rate history', async () => {
+            const mockResult = [
+                { rate: 1.6, created_at: '2025-10-29T10:00:00Z' },
+                { rate: 1.5, created_at: '2025-10-28T10:00:00Z' },
+            ];
+            (mockPool.query as jest.Mock).mockResolvedValue({ rows: mockResult, rowCount: mockResult.length } as any);
+
+            const result = await repository.getRateHistory('USD', 'EUR', 2);
+            expect(result).toEqual(mockResult);
+        });
+    });
 });
