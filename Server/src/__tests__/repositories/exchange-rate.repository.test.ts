@@ -45,5 +45,12 @@ describe('ExchangeRateRepository', () => {
                 ['USD', 'EUR']
             );
         });
+
+        it('should return null if no rate found', async () => {
+            (mockPool.query as jest.Mock).mockResolvedValue({ rows: [], rowCount: 0} as any);
+
+            const result = await repository.getLastKnownRate('USD', 'EUR');
+            expect(result).toBeNull();
+        });
     });
 });
