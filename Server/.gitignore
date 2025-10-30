@@ -5,6 +5,8 @@ dist/
 *.log
 coverage/
 .nyc_output/
-src/test/.env.test
+src/tests/.env.test
 
-__test__/.env.test
+src/tests/.env.test
+
+__tests__/.env.test

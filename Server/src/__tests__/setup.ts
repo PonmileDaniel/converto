@@ -2,21 +2,25 @@ import dotenv from 'dotenv';
 
 dotenv.config({ path: '.env.test' });
 
-// Mock Redis client
-jest.mock('../config/redis', () => ({
-  get: jest.fn(),
-  set: jest.fn(),
-  del: jest.fn(),
-  connect: jest.fn(),
-  quit: jest.fn(),
-  ping: jest.fn().mockResolvedValue('PONG')
+// Mock database pool globally
+jest.mock('../config/database', () => ({
+    __esModule: true,
+    default: {
+        query: jest.fn(),
+        connect: jest.fn(),
+        end: jest.fn()
+    }
 }));
 
-// Mock Database pool
-jest.mock('../config/database', () => ({
-  query: jest.fn(),
-  end: jest.fn(),
-  on: jest.fn()
+// Mock Redis client globally  
+jest.mock('../config/redis', () => ({
+    __esModule: true,
+    default: {
+        get: jest.fn(),
+        set: jest.fn(),
+        del: jest.fn(),
+        quit: jest.fn()
+    }
 }));
 
 // Mock axios for external API calls
