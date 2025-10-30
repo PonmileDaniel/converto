@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.DS_Store
+*.log
+coverage/
+.nyc_output/
+src/tests/.env.test
+
+src/tests/.env.test
+
+__tests__/.env.test
