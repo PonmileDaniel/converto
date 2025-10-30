@@ -66,7 +66,7 @@ describe('ExchangeRateRepository', () => {
             expect(result).toEqual(mockResult);
         });
 
-        it('should return null if no rate found', async () => {
+        it('should return empty if no rate found', async () => {
             (mockPool.query as jest.Mock).mockResolvedValue({ rows: [], rowCount: 0} as any);
 
             const result = await repository.getRateHistory('USD', 'EUR', 2);
