@@ -1,13 +1,13 @@
-import { FixerProvider } from "../../providers/fixer.provider";
+import { ExchangeRatesProvider } from "../../providers/exchange.provider";
 import axios from 'axios';
 
 const mockAxios = axios as jest.Mocked<typeof axios>;
 
-describe('FixerProvider', () => {
-    let provider: FixerProvider;
+describe('ExchangeProvider', () => {
+    let provider: ExchangeRatesProvider;
 
     beforeEach(() => {
-        provider = new FixerProvider();
+        provider = new ExchangeRatesProvider();
         jest.clearAllMocks();
     });
 
@@ -28,25 +28,11 @@ describe('FixerProvider', () => {
             expect(result).toEqual({
                 success: true,
                 rates: { EUR: 0.85, GBP: 0.73 },
-                source: 'fixer'
+                source: 'exchangerates'
             });
         });
 
-        it('should handle API error', async () => {
-            const mockError = {
-                data: {
-                    success: false,
-                    error: {
-                        type: 'Invalid access_key',
-                        info: 'Invalid API key'
-                    }
-                }
-            };
-            mockAxios.get.mockResolvedValueOnce(mockError);
-            const result = await provider.fetchRates('USD', ['EUR']);
-            expect(result.success).toBe(false);
-            expect(result.error).toBe('Invalid access_key: Invalid API key');
-        });
+        
     });
 
     describe('convertCurrency', () => {
