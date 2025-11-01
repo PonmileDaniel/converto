@@ -1,4 +1,4 @@
-# Currency Converter API 💱
+# Currency Converter API
 
 A robust TypeScript API for real-time currency conversion with multi-provider support and intelligent caching.
 
