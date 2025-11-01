@@ -77,4 +77,4 @@ npm run build
 
 ## License
 
-MIT © [Your Name](LICENSE)
+MIT © [Ndukwe Daniel](LICENSE)
