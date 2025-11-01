@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { version } from "os";
+
 
 export class AppController {
     getAppInfo = async (req: Request, res: Response): Promise<void> => {
