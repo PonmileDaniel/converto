@@ -9,6 +9,7 @@ import currencyRoutes from '../routes/currency.routes';
 import healthRoutes from '../routes/health.routes';
 import appRoutes from '../routes/app.routes'
 import {appConfig} from '../config/app.config';
+import { setupSwagger } from '../config/swagger';
 
 dotenv.config();
 
@@ -30,6 +31,7 @@ export class ServerSetup {
         this.app.use(morgan('combined'));
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+        setupSwagger(this.app);
     }
 
     private setupRoutes(): void {

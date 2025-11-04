@@ -1,0 +1,19 @@
+# Root endpoint
+/:
+  get:
+    summary: Get API information
+    description: Get basic information about the Currency Converter API
+    tags: [General]
+    responses:
+      200:
+        description: API information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppInfo'
+            examples:
+              app_info:
+                summary: API information response
+                value:
+                  message: "Currency converter API"
+                  version: "1.0.0"
