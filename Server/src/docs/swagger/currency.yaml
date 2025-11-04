@@ -1,0 +1,146 @@
+# Currency conversion endpoint
+/api/currency/convert:
+  get:
+    summary: Convert currency
+    description: Convert an amount from one currency to another using real-time exchange rates
+    tags: [Currency]
+    parameters:
+      - in: query
+        name: from
+        required: true
+        schema:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        description: Source currency code (ISO 4217)
+        example: USD
+      - in: query
+        name: to
+        required: true
+        schema:
+          type: string
+          pattern: '^[A-Z]{3}$'
+        description: Target currency code (ISO 4217)
+        example: EUR
+      - in: query
+        name: amount
+        schema:
+          type: number
+          minimum: 0.01
+        description: Amount to convert (default: 1)
+        example: 100
+    responses:
+      200:
+        description: Successful conversion
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConversionResponse'
+            examples:
+              successful_conversion:
+                summary: Successful currency conversion
+                value:
+                  success: true
+                  data:
+                    from: "USD"
+                    to: "EUR"
+                    amount: 100
+                    convertedAmount: 85.50
+                    rate: 0.855
+                    cached: false
+                    source: "fixer"
+                    timestamp: "2024-01-15T10:30:00.000Z"
+              cached_conversion:
+                summary: Cached currency conversion
+                value:
+                  success: true
+                  data:
+                    from: "USD"
+                    to: "EUR"
+                    amount: 100
+                    convertedAmount: 85.50
+                    rate: 0.855
+                    cached: true
+                    source: "cache"
+                    timestamp: "2024-01-15T10:30:00.000Z"
+      400:
+        description: Invalid input parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            examples:
+              invalid_currency_code:
+                summary: Invalid currency code
+                value:
+                  error: "\"from\" length must be 3 characters long"
+              invalid_amount:
+                summary: Invalid amount
+                value:
+                  error: "\"amount\" must be a positive number"
+      500:
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            examples:
+              all_providers_failed:
+                summary: All providers failed
+                value:
+                  error: "Internal Server Error"
+
+# Provider status endpoint
+/api/currency/providers:
+  get:
+    summary: Get provider status
+    description: Get the status and health information of all currency providers
+    tags: [Currency]
+    responses:
+      200:
+        description: Provider status retrieved successfully
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/ProviderStatus'
+            examples:
+              provider_status:
+                summary: Provider status response
+                value:
+                  success: true
+                  data:
+                    - name: "exchangerates"
+                      priority: 1
+                      is_active: true
+                      last_success_at: "2024-01-15T10:25:00.000Z"
+                      failure_count: 0
+                    - name: "currencyapi"
+                      priority: 2
+                      is_active: true
+                      last_success_at: "2024-01-15T10:20:00.000Z"
+                      failure_count: 1
+                    - name: "fixer"
+                      priority: 3
+                      is_active: false
+                      last_success_at: "2024-01-15T09:30:00.000Z"
+                      failure_count: 5
+      500:
+        description: Failed to get provider status
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                error:
+                  type: string
+                  example: "Failed to get provider status"

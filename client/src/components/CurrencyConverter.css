@@ -1,0 +1,432 @@
+.converter-card {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 2rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.card-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.input-section {
+  margin-bottom: 1.5rem;
+}
+
+.input-label {
+  display: block;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.amount-input {
+  width: 95%;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.amount-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  transform: scale(1.02);
+}
+
+.currency-section {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: end;
+  margin-bottom: 2rem;
+}
+
+.currency-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.currency-select {
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.currency-select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.swap-button {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.5rem;
+  margin-bottom: 0;
+}
+
+.swap-button:hover {
+  transform: rotate(180deg) scale(1.1);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.convert-button {
+  width: 100%;
+  padding: 1.2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.convert-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.convert-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.loading-icon {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 1rem;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+  border-left: 4px solid #dc2626;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ========== RESULT SECTION - IMPORTANT ========== */
+.result-section {
+  margin-top: 2rem;
+  animation: slideInUp 0.5s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+  border: 3px solid #22c55e;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(34, 197, 94, 0.2);
+}
+
+.result-header {
+  text-align: center;
+  color: #15803d;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.result-amount {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  background: white;
+  padding: 2rem;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.from-amount,
+.to-amount {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  min-width: 130px;
+  text-align: center;
+}
+
+.from-amount {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+}
+
+.to-amount {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e7fce6 100%);
+  border: 3px solid #22c55e;
+}
+
+.currency-flag {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.amount-value {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.amount-value.converted {
+  font-size: 2.2rem;
+  color: #22c55e;
+  font-weight: 800;
+}
+
+.currency-code {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.equals {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #22c55e;
+}
+
+.result-details {
+  border-top: 2px solid #d1fae5;
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rate-info {
+  text-align: center;
+  font-size: 1rem;
+  color: #374151;
+  padding: 1rem;
+  background: white;
+  border-radius: 10px;
+  border: 2px solid #d1fae5;
+  font-weight: 600;
+}
+
+.meta-info {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.5rem 0;
+}
+
+.source {
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-weight: 600;
+}
+
+.source.cached {
+  color: #7c3aed;
+  border-color: #e9d5ff;
+  background: #faf5ff;
+}
+
+.source.live {
+  color: #22c55e;
+  border-color: #d1fae5;
+  background: #f0fdf4;
+}
+
+.timestamp {
+  padding: 0.5rem 1rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  font-weight: 600;
+}
+
+/* ========== MOBILE RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .converter-card {
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 16px;
+  }
+
+  .card-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .currency-section {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .swap-button {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+
+  .swap-button:hover {
+    transform: rotate(270deg) scale(1.1);
+  }
+
+  .result-amount {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .from-amount,
+  .to-amount {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .currency-flag {
+    font-size: 2.5rem;
+  }
+
+  .amount-value {
+    font-size: 1.6rem;
+  }
+
+  .amount-value.converted {
+    font-size: 1.9rem;
+  }
+
+  .equals {
+    transform: rotate(90deg);
+    margin: 0.5rem 0;
+  }
+
+  .result-card {
+    padding: 1.5rem;
+  }
+
+  .result-header {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .meta-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .source,
+  .timestamp {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .converter-card {
+    padding: 1rem;
+    margin: 0.5rem;
+    border-radius: 14px;
+  }
+
+  .card-title {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .amount-input,
+  .currency-select {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .convert-button {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .currency-flag {
+    font-size: 2rem;
+  }
+
+  .amount-value {
+    font-size: 1.4rem;
+  }
+
+  .amount-value.converted {
+    font-size: 1.7rem;
+  }
+
+  .result-amount {
+    padding: 1rem;
+  }
+
+  .rate-info {
+    font-size: 0.9rem;
+    padding: 0.75rem;
+  }
+}
