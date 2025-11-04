@@ -39,11 +39,13 @@ export class ExchangeRatesProvider extends BaseProvider {
 
             console.log(`ExchangeRates API URL: ${url}`);
             const data = await this.makeRequest(url, 10000);
-            console.log(`ExchangeRates API Response:`, JSON.stringify({
-                base: data.base,
-                date: data.date,
-                rates: 'Object with ' + Object.keys(data.rates || {}).length + ' currencies'
-            }, null, 2));
+            if (process.env.NODE_ENV === 'development') {
+                console.log(`ExchangeRates API Response:`, JSON.stringify({
+                    base: data.base,
+                    date: data.date,
+                    rates: 'Object with ' + Object.keys(data.rates || {}).length + ' currencies'
+                }, null, 2));
+            }
 
             if (!data.rates) {
                 throw new Error('Invalid response from ExchangeRates API');
