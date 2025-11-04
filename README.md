@@ -17,6 +17,24 @@ A robust TypeScript API for real-time currency conversion with multi-provider su
 - **Docker Ready** - Containerized deployment
 - **Production Security** - Helmet, CORS, input validation, rate limiting
 
+## 🏗️ Architecture
+
+[Include your architecture diagram here]
+
+## 🛠️ Tech Stack
+
+**Backend**
+- TypeScript + Node.js + Express.js
+- PostgreSQL + Redis
+- Jest + Supertest (Testing)
+- Swagger/OpenAPI 3.0
+
+**Frontend**
+- React 18 + Vite
+- Modern CSS with responsive design
+- Axios for API communication
+
+
 ## Quick Start
 
 ```bash
